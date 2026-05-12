@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>goboxd · A hackathon at Paradox, IIT Madras 2026</title>
+  <meta name="description" content="Build a sandbox that runs untrusted code — in Go, on Linux. A three-stage hackathon by SEEK at Paradox, IIT Madras.">
+  <meta property="og:title" content="goboxd · A hackathon at Paradox, IIT Madras">
+  <meta property="og:description" content="Build a sandbox that runs untrusted code — in Go, on Linux. Three stages. Ten days online, two days at Paradox.">
+  <meta property="og:type" content="website">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/styles.css">
+  <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+</head>
+<body class="page-overview">
+  <header class="site-nav">
+    <div class="nav-inner">
+      <a class="nav-brand mono" href="./">goboxd</a>
+      <nav>
+        <a href="./" class="active">Overview</a>
+        <a href="spec.html">Spec</a>
+        <a href="https://github.com/intern-iitm/goboxd-hackathon/discussions">Discussions</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <p class="kicker">A hackathon at Paradox, IIT Madras · 2026</p>
+        <h1 class="display">goboxd</h1>
+        <p class="lead">Build a sandbox that runs untrusted code &mdash; in Go, on Linux.</p>
+        <p class="hero-meta">Three stages. Ten days online, two days at Paradox. Cash, internships, and the kind of problem you don't get to work on in a classroom.</p>
+        <div class="cta-row">
+          <a href="https://google.com" class="btn btn-primary">Register</a>
+          <a href="spec.html" class="btn btn-secondary">Read the spec</a>
+        </div>
+        <p class="hero-dates mono">May 20 &rarr; Paradox finale · solo or pairs · open registration</p>
+      </div>
+    </section>
+
+    <section class="section section-audience">
+      <div class="container narrow">
+        <p class="kicker">Who this is for</p>
+        <h2 class="display">If you like the layer where code meets the operating system, this one is for you.</h2>
+        <p>You'll spend time inside Linux namespaces, cgroups, and process isolation. You'll design an HTTP service in Go that has to stay fast under load and refuse to break when fed adversarial inputs. You'll close real security holes that exist in production sandbox software today &mdash; not toy ones.</p>
+        <p>This is a good fit if you're drawn to <strong>systems programming, Linux internals, Go, concurrency, sandboxing, security, or container-style isolation</strong> &mdash; or if you just want to find out whether that kind of work is for you. No prior nsjail experience expected. We give you a working Python reference to read so you start with a behaviour to match, not a blank page.</p>
+      </div>
+    </section>
+
+    <section class="section section-build">
+      <div class="container narrow">
+        <p class="kicker">What you'll build</p>
+        <h2 class="display">goboxd &mdash; "Go sandbox daemon."</h2>
+        <p>A small HTTP service that accepts a snippet of code, compiles and runs it inside an nsjail sandbox, and returns per-test results. Other people's code execution platforms do this. Yours will too.</p>
+        <p>To get you started, we hand you a working reference implementation in Python and Flask. It runs, it has tests, and it has a handful of deliberate security holes that we'll point you at directly. Read it as a behaviour spec. Then design the Go version the way you think it should be designed.</p>
+
+        <h3 class="subheading">The three things we care about most</h3>
+        <ul class="value-list">
+          <li><strong>A clean plug-and-play language registry.</strong> On demo day, we'll hand you a language you don't support and ask you to add it in under 30 minutes. No Go code change. One YAML edit and an install script.</li>
+          <li><strong>Concurrency that holds up under sustained load.</strong> Not a micro-benchmark. We'll run real traffic at your service.</li>
+          <li><strong>Security holes closed, on purpose, and documented.</strong> Pick five of the seven we list, fix them, and tell us in your PR exactly where you fixed each.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section section-stages">
+      <div class="container">
+        <p class="kicker">The three stages</p>
+        <h2 class="display">From May 20 to Paradox.</h2>
+        <div class="stages-grid">
+          <article class="stage">
+            <p class="stage-num mono">Stage 01</p>
+            <p class="stage-dates mono">Online · May 20 &ndash; May 30</p>
+            <h3>Build a prototype</h3>
+            <p>Ten days. A working sandbox that talks the API. Auto-evaluated on technical quality, documentation, and how you handle the basics of an SDLC &mdash; branches, tests, commit history.</p>
+            <p class="stage-advance"><strong>10 teams advance.</strong></p>
+          </article>
+          <article class="stage">
+            <p class="stage-num mono">Stage 02</p>
+            <p class="stage-dates mono">Online · June 1 &ndash; 2</p>
+            <h3>Extend to multiple languages</h3>
+            <p>24&ndash;36 hours. The 10 teams get an extension brief: your sandbox now needs to handle multiple language toolchains, plug-and-play.</p>
+            <p class="stage-advance"><strong>Same 10 teams continue.</strong></p>
+          </article>
+          <article class="stage">
+            <p class="stage-num mono">Stage 03</p>
+            <p class="stage-dates mono">In person · Paradox · 24 hours</p>
+            <h3>Harden it under pressure</h3>
+            <p>The final brief drops the morning of: security pressure and concurrent load. You work alongside SEEK engineers and demo what you built. This is when we get to know you.</p>
+            <p class="stage-advance"><strong>Winners announced on site.</strong></p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-rewards">
+      <div class="container">
+        <p class="kicker">Rewards</p>
+        <h2 class="display">Real money. Real internships.</h2>
+        <div class="rewards-grid">
+          <div class="reward-card">
+            <h3 class="reward-title">Cash prizes</h3>
+            <ul class="prize-list">
+              <li><span class="prize-place">1st place</span><span class="prize-amount">&#8377;50,000</span></li>
+              <li><span class="prize-place">2nd place</span><span class="prize-amount">&#8377;25,000</span></li>
+              <li><span class="prize-place">3rd place</span><span class="prize-amount">&#8377;10,000</span></li>
+            </ul>
+            <p class="reward-note">Paid to all three podium teams.</p>
+          </div>
+          <div class="reward-card highlighted">
+            <h3 class="reward-title">Internship at SEEK</h3>
+            <p class="reward-headline">Two slots · 4 months · &#8377;18,000 &ndash; &#8377;25,000 per month</p>
+            <p>Two paid internships at SEEK's tech team &mdash; one for each of the top two teams. If your team is a pair, you decide between yourselves who takes the slot.</p>
+            <p class="reward-note">The exact stipend is set after a short technical conversation.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-logistics">
+      <div class="container narrow">
+        <p class="kicker">Eligibility &amp; logistics</p>
+        <dl class="logistics">
+          <div>
+            <dt>Who can register</dt>
+            <dd>Anyone. Open registration for Stage 1. Existing SEEK employees and contractors can play but not place &mdash; register as out-of-competition.</dd>
+          </div>
+          <div>
+            <dt>Team size</dt>
+            <dd>Solo, or pairs of two. No larger teams.</dd>
+          </div>
+          <div>
+            <dt>Where</dt>
+            <dd>Stages 1 and 2 are online. Stage 3 is in person at Paradox, IIT Madras.</dd>
+          </div>
+          <div>
+            <dt>Travel &amp; stay</dt>
+            <dd>Finalists arrange their own travel and accommodation to Paradox.</dd>
+          </div>
+          <div>
+            <dt>How you register</dt>
+            <dd>Hit the Register button at the top of this page. The form opens shortly.</dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+
+    <section class="section section-faq">
+      <div class="container narrow">
+        <p class="kicker">FAQ</p>
+        <h2 class="display">Questions we expect.</h2>
+        <dl class="faq">
+          <div>
+            <dt>Do I need to know nsjail already?</dt>
+            <dd>No. The reference repo uses nsjail, and we'll point you at the upstream docs. Curiosity is enough.</dd>
+          </div>
+          <div>
+            <dt>Which Go HTTP framework should I use?</dt>
+            <dd>Any of them &mdash; net/http, chi, echo, gin, whatever. Justify your choice in your README in two sentences.</dd>
+          </div>
+          <div>
+            <dt>Can I work solo?</dt>
+            <dd>Yes. Team size is 1 or 2.</dd>
+          </div>
+          <div>
+            <dt>What if I don't make it past Stage 1?</dt>
+            <dd>You walk away with a working Go service you wrote in ten days. Worth keeping on a portfolio.</dd>
+          </div>
+          <div>
+            <dt>I'm not from IIT Madras. Can I still join?</dt>
+            <dd>Yes. Stages 1 and 2 are online. If you reach Stage 3, you'll need to be at Paradox in person and you arrange your own travel.</dd>
+          </div>
+          <div>
+            <dt>What happens at Stage 3 besides building?</dt>
+            <dd>You'll work near SEEK engineers, demo what you built, and have informal conversations about how you think and work. The interaction matters.</dd>
+          </div>
+          <div>
+            <dt>How do you actually judge?</dt>
+            <dd>A weighted rubric across the plug-and-play language model, concurrency, API conformance, security, code quality, extra languages, and health endpoints. Full table on the <a href="spec.html#judging">spec page</a>.</dd>
+          </div>
+          <div>
+            <dt>Where do I ask questions?</dt>
+            <dd>GitHub Discussions on this repo. <a href="https://github.com/intern-iitm/goboxd-hackathon/discussions">Open a thread.</a></dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+
+    <section class="section section-cta-final">
+      <div class="container narrow">
+        <h2 class="display">Ready?</h2>
+        <p>Registration is open. The first stage starts May 20.</p>
+        <div class="cta-row">
+          <a href="https://google.com" class="btn btn-primary">Register</a>
+          <a href="spec.html" class="btn btn-secondary">Read the spec</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p class="mono">goboxd · A SEEK hackathon at Paradox, IIT Madras · 2026</p>
+      <nav class="footer-nav">
+        <a href="./">Overview</a>
+        <a href="spec.html">Spec</a>
+        <a href="https://github.com/intern-iitm/goboxd-hackathon/discussions">Discussions</a>
+        <a href="https://github.com/thesouldev/goboxd">Submission repo</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script src="assets/main.js" defer></script>
+</body>
+</html>
