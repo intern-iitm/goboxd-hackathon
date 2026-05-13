@@ -119,7 +119,12 @@
 
         <h4>Errors</h4>
         <p>Errors that prevent any execution (bad JSON, unknown language, oversize body, malformed filename, disallowed flag) return HTTP <code>400</code>:</p>
-        <pre><code class="lang-json">{ "error": { "code": "invalid_filename", "message": "source_filename must be a single path component" } }</code></pre>
+        <pre><code class="lang-json">{
+  "error": {
+    "code": "invalid_filename",
+    "message": "source_filename must be a single path component"
+  }
+}</code></pre>
         <p><code>5xx</code> is reserved for server failures (sandbox setup error, nsjail not found, disk full). Never return <code>5xx</code> because the user code crashed.</p>
 
         <h3 class="endpoint mono">GET /healthz</h3>
