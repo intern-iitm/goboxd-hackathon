@@ -680,10 +680,157 @@ table.judging td:last-child {
   border-bottom-color: var(--accent);
 }
 
+/* featured image (editorial hero feature) */
+.featured {
+  padding: 32px 0 8px;
+}
+.feature-figure {
+  margin: 0;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+.feature-figure img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* inline figure (smaller, sits within narrow prose) */
+.inline-figure {
+  margin: 36px 0;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+}
+.inline-figure img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.inline-figure figcaption {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--fg-dim);
+  padding: 14px 20px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-elevated);
+  letter-spacing: 0.01em;
+  line-height: 1.5;
+}
+
+/* diagram figure (spec page, lighter chrome) */
+.diagram-figure {
+  margin: 24px 0 32px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--bg);
+}
+.diagram-figure img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.diagram-figure figcaption {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--fg-dim);
+  padding: 14px 20px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-elevated);
+  letter-spacing: 0.01em;
+  line-height: 1.5;
+}
+
+/* stage minimums callout */
+.stage-minimums {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin: 36px 0 0;
+}
+.minimum {
+  padding: 28px 26px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+}
+.minimum-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+  margin: 0 0 16px;
+  font-weight: 600;
+}
+.minimum ul {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+}
+.minimum ul li {
+  margin: 0;
+  padding: 14px 0;
+  border-top: 1px solid var(--border);
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--fg-soft);
+}
+.minimum ul li:first-child {
+  border-top: none;
+  padding-top: 4px;
+}
+.minimum code {
+  font-size: 0.92em;
+  background: var(--code-bg);
+  padding: 1px 5px;
+  white-space: normal;
+}
+
+/* judging axes triptych */
+.judging-axes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin: 28px 0 32px;
+}
+.axis {
+  padding: 26px 0 0;
+  border-top: 1px solid var(--fg);
+}
+.axis-num {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: var(--fg-dim);
+  margin: 0 0 10px;
+  font-weight: 500;
+}
+.axis h4 {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  margin: 0 0 10px;
+  color: var(--fg);
+  text-transform: none;
+}
+.axis p {
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--fg-dim);
+  margin: 0;
+}
+
 /* responsive */
 @media (max-width: 900px) {
   .stages-grid { grid-template-columns: 1fr; gap: 28px; }
   .rewards-grid { grid-template-columns: 1fr; gap: 18px; }
+  .stage-minimums { grid-template-columns: 1fr; gap: 16px; }
+  .judging-axes { grid-template-columns: 1fr; gap: 28px; }
 }
 
 @media (max-width: 760px) {

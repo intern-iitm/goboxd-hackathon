@@ -30,41 +30,101 @@
         <h1 class="display">goboxd / spec</h1>
         <p class="lead">The technical brief. Everything you need to build a submittable goboxd.</p>
         <nav class="spec-toc mono">
-          <a href="#brief">01 The brief</a>
-          <a href="#api">02 API contract</a>
-          <a href="#status">03 Status vocabulary</a>
-          <a href="#languages">04 Plug-and-play languages</a>
-          <a href="#security">05 Security</a>
-          <a href="#concurrency">06 Concurrency</a>
-          <a href="#repo">07 Repo &amp; tooling</a>
-          <a href="#judging">08 Judging</a>
-          <a href="#submission">09 Submission</a>
-          <a href="#resources">10 Resources</a>
+          <a href="#primer">00 What a sandbox does</a>
+          <a href="#stages">01 What to ship, by stage</a>
+          <a href="#brief">02 The brief</a>
+          <a href="#api">03 API contract</a>
+          <a href="#status">04 Status vocabulary</a>
+          <a href="#languages">05 Plug-and-play languages</a>
+          <a href="#security">06 Security</a>
+          <a href="#concurrency">07 Concurrency</a>
+          <a href="#repo">08 Repo &amp; tooling</a>
+          <a href="#judging">09 Judging</a>
+          <a href="#submission">10 Submission</a>
+          <a href="#resources">11 Resources</a>
         </nav>
       </div>
     </div>
 
     <article class="container narrow spec-body">
-      <section id="brief" class="spec-section">
+      <section id="primer" class="spec-section">
+        <p class="section-num mono">00</p>
+        <h2>What a sandbox actually does</h2>
+        <figure class="diagram-figure">
+          <img src="assets/img/sandbox-diagram.png" alt="Side-by-side diagram. Left: host operating system with global PID, network, and mount namespaces, kernel threads, CPU/memory management, and I/O scheduler. Right: an isolated sandboxed process with its own PIDs, restricted network namespace, restricted mount namespace, restricted syscalls, and cgroup limits on CPU, memory, and I/O." loading="lazy">
+          <figcaption>Left: the host operating system. Right: an isolated process inside a sandbox, with its own namespaces for PIDs, networking, and the filesystem, restricted syscalls, and CPU, memory, and I/O capped by cgroups.</figcaption>
+        </figure>
+        <p>A sandbox is a process that the operating system has been tricked into treating as if it were on its own machine. On Linux, the trick is built from two primitives: <strong>namespaces</strong> (which give the process a private view of PIDs, network interfaces, mounts, users, and hostnames) and <strong>cgroups</strong> (which cap how much CPU, memory, and I/O it can use). Add a restricted set of syscalls on top, and a runaway program inside the sandbox can't see, reach, or starve anything outside it.</p>
+        <p>That's what goboxd is built around. Every <code>POST /run</code> request creates a fresh sandbox, runs untrusted code inside it, captures the result, and tears the sandbox down. Stage 1 of the hackathon is about getting that loop working at all. Stage 2 makes it polyglot. Stage 3 makes it survive adversarial pressure under load.</p>
+      </section>
+
+      <section id="stages" class="spec-section">
         <p class="section-num mono">01</p>
+        <h2>What to ship, by stage</h2>
+        <p>Three stages, three escalating bars. Each is judged on what you have at the end of that stage, not on intent.</p>
+        <div class="stage-minimums">
+          <div class="minimum">
+            <p class="minimum-label mono">Stage 1 &middot; prototype</p>
+            <ul>
+              <li>A Go HTTP service that builds and runs in Docker</li>
+              <li><code>/healthz</code> returns <code>200</code></li>
+              <li><code>POST /run</code> runs two languages end-to-end: one interpreted (Python, Bash, or Node) and one compiled (C, C++, or Java)</li>
+              <li>Unit tests, a readable README, and a clean commit history</li>
+            </ul>
+          </div>
+          <div class="minimum">
+            <p class="minimum-label mono">Stage 2 &middot; polyglot</p>
+            <ul>
+              <li>All seven in-scope languages registered via YAML</li>
+              <li><code>/readyz</code> and <code>/info</code> reflect the registered set</li>
+              <li>A new language added in under 30 minutes with no Go code change</li>
+              <li>Per-request limits and flag allow-lists enforced</li>
+            </ul>
+          </div>
+          <div class="minimum">
+            <p class="minimum-label mono">Stage 3 &middot; harden &amp; load</p>
+            <ul>
+              <li>5 of 7 security holes closed, with the fixes documented in the PR</li>
+              <li>Bounded concurrency with a queue, not failures</li>
+              <li>Benchmarks at 1, 10, 50, and 100 clients in <code>docs/benchmarks.md</code> (p50, p95, p99)</li>
+              <li>Holds up under sustained load on judging day</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="brief" class="spec-section">
+        <p class="section-num mono">02</p>
         <h2>The brief</h2>
-        <p>Build a small HTTP service in Go that runs untrusted code inside an nsjail sandbox and returns per-test results. The service name is <code>goboxd</code> &mdash; "Go sandbox daemon."</p>
-        <p>A reference Python + Flask implementation is provided so you can read, run, and reverse-engineer the behaviour locally. It is intentionally a bit crusty &mdash; read it as a behaviour spec, not as a guide.</p>
+        <p>Build a small HTTP service in Go that runs untrusted code inside an nsjail sandbox and returns per-test results. The service name is <code>goboxd</code>, short for "Go sandbox daemon."</p>
+        <p>A reference Python + Flask implementation is provided so you can read, run, and reverse-engineer the behaviour locally. It is intentionally a bit crusty. Read it as a behaviour spec, not as a guide.</p>
         <p>The goboxd you build uses plain JSON on the wire, supports modern toolchains only, and is judged primarily on three things:</p>
-        <ol>
-          <li>A clean plug-and-play language registry.</li>
-          <li>Demonstrated concurrency.</li>
-          <li>Closing a known set of security holes that we point you at directly.</li>
-        </ol>
+        <div class="judging-axes">
+          <div class="axis">
+            <p class="axis-num mono">01</p>
+            <h4>Plug-and-play languages</h4>
+            <p>A clean language registry. We hand you a new language on demo day and you add it in 30 minutes with no Go code change.</p>
+          </div>
+          <div class="axis">
+            <p class="axis-num mono">02</p>
+            <h4>Concurrency</h4>
+            <p>Bounded, queued, benchmarked. Holds up under sustained load, not just micro-bursts.</p>
+          </div>
+          <div class="axis">
+            <p class="axis-num mono">03</p>
+            <h4>Security</h4>
+            <p>Close at least 5 of the 7 holes we point you at. Document where you fixed each in the PR.</p>
+          </div>
+        </div>
         <h3>In scope</h3>
         <p>C, C++, Java, Python 3, Bash, JavaScript (Node), Verilog. Per-test status. Per-request resource overrides. Per-request build/run flags (validated).</p>
         <h3>Out of scope</h3>
         <p>Anything binary on the wire, the reference's evaluation-script mode, the zip language, Python 2, authentication, rate limiting, queues, persistence, web UIs.</p>
-        <p>You may pick any Go HTTP framework &mdash; net/http, chi, echo, gin, whatever. Two-sentence justification in the README.</p>
+        <p>You may pick any Go HTTP framework: net/http, chi, echo, gin, whatever. Two-sentence justification in the README.</p>
       </section>
 
       <section id="api" class="spec-section">
-        <p class="section-num mono">02</p>
+        <p class="section-num mono">03</p>
         <h2>API contract</h2>
 
         <h3 class="endpoint mono">POST /run</h3>
@@ -89,12 +149,12 @@
 
         <h4>Field rules</h4>
         <ul class="rules">
-          <li><code>language</code> &mdash; required. Must match a configured language id; 400 otherwise.</li>
-          <li><code>source</code> &mdash; required, UTF-8, server-imposed max size (default 256 KiB).</li>
-          <li><code>source_filename</code>, <code>artifact_filename</code> &mdash; optional. Required only for languages that need them (e.g. Java). Must be a single path component, no separators, no leading dot, length-bounded.</li>
-          <li><code>build</code> and <code>run</code> &mdash; optional. Each can supply <code>limits</code> (a partial override of the language defaults) and <code>flags</code> (extra args to the build/run command). Missing fields fall back to language defaults.</li>
-          <li><code>flags</code> &mdash; array of strings. The server filters these against a per-language allow-list and rejects unsafe flags with a 400. See <a href="#security">Security</a>.</li>
-          <li><code>tests</code> &mdash; required, at least one entry. Each <code>stdin</code> is fed to the program; <code>expected_stdout</code> is compared to its stdout.</li>
+          <li><code>language</code>: required. Must match a configured language id, otherwise 400.</li>
+          <li><code>source</code>: required, UTF-8. Subject to a server-imposed max size (default 256 KiB).</li>
+          <li><code>source_filename</code>, <code>artifact_filename</code>: optional. Required only for languages that need them (e.g. Java). Must be a single path component, with no separators, no leading dot, and a length cap.</li>
+          <li><code>build</code> and <code>run</code>: optional. Each can supply <code>limits</code> (a partial override of the language defaults) and <code>flags</code> (extra args to the build or run command). Missing fields fall back to language defaults.</li>
+          <li><code>flags</code>: an array of strings. The server filters these against a per-language allow-list and rejects unsafe flags with a 400. See <a href="#security">Security</a>.</li>
+          <li><code>tests</code>: required, at least one entry. Each <code>stdin</code> is fed to the program, and <code>expected_stdout</code> is compared to its stdout.</li>
         </ul>
 
         <p>Response (<code>200</code> once the run completes, regardless of user-code outcome):</p>
@@ -171,7 +231,7 @@
       </section>
 
       <section id="status" class="spec-section">
-        <p class="section-num mono">03</p>
+        <p class="section-num mono">04</p>
         <h2>Status vocabulary</h2>
         <div class="table-wrap">
           <table>
@@ -198,10 +258,10 @@
       </section>
 
       <section id="languages" class="spec-section">
-        <p class="section-num mono">04</p>
+        <p class="section-num mono">05</p>
         <h2>Plug-and-play languages</h2>
         <p>Adding a language should be one YAML block and one PR. No Go code change unless the language needs custom logic.</p>
-        <p>Recommended shape (you may refine &mdash; but document whatever you change):</p>
+        <p>Recommended shape. You may refine it; just document whatever you change.</p>
         <pre><code class="lang-yaml">languages:
   - id: py3
     name: Python 3
@@ -238,12 +298,12 @@
       limits: { wall_time_s: 6, memory_kb: 102400, max_processes: 100 }</code></pre>
 
         <h3>What we look at on demo day</h3>
-        <p>We'll hand you a language we don't already support (Rust, Go, Kotlin, Ruby, etc.) and ask you to register it. You should be able to do it in 30 minutes or less, with no code change &mdash; only a YAML edit, an installation script during Docker build, and a smoke test. We'll watch you do it.</p>
+        <p>We'll hand you a language we don't already support (Rust, Go, Kotlin, Ruby, etc.) and ask you to register it. You should be able to do it in 30 minutes or less, with no code change. Just a YAML edit, an installation script during the Docker build, and a smoke test. We'll watch you do it.</p>
         <p>We also look at: clear placeholder semantics, startup-time validation that fails loudly with a useful error, and <code>/readyz</code> and <code>/info</code> reflecting the registered set automatically.</p>
       </section>
 
       <section id="security" class="spec-section">
-        <p class="section-num mono">05</p>
+        <p class="section-num mono">06</p>
         <h2>Security</h2>
         <p>The reference has the holes below. Fix at least five in your Go version. Each extra one above five counts as a bonus. In your PR description, list which ones you closed and link to the <code>file:line</code> where you closed each.</p>
         <ol class="security-list">
@@ -261,7 +321,7 @@
           </li>
           <li>
             <strong>No request size limits.</strong>
-            Source size, test count, per-test stdin/expected size, captured stdout/stderr &mdash; all unbounded. Cap at the HTTP layer and at the sandbox layer (<code>rlimit_fsize</code>, capped reads).
+            Source size, test count, per-test stdin and expected size, captured stdout and stderr: all unbounded. Cap them at the HTTP layer and at the sandbox layer (<code>rlimit_fsize</code>, capped reads).
           </li>
           <li>
             <strong>UID collisions under load.</strong>
@@ -279,36 +339,36 @@
       </section>
 
       <section id="concurrency" class="spec-section">
-        <p class="section-num mono">06</p>
+        <p class="section-num mono">07</p>
         <h2>Concurrency</h2>
         <p>The judging weight on concurrency is high. We want evidence, not vibes.</p>
         <ul class="rules">
           <li>A bounded global concurrency limit, configurable (env var or YAML), default <code>runtime.NumCPU()</code>. When the limit is reached, requests queue rather than fail.</li>
           <li>A small load-test script in the repo (<code>hey</code>, <code>vegeta</code>, <code>k6</code>, or your own).</li>
           <li>A <code>docs/benchmarks.md</code> showing requests/sec and p50/p95/p99 for the trivial "Hello World, py3" case at 1, 10, 50, and 100 concurrent clients on whatever box you measured on. Numbers from a clean Docker run, not from a debugger.</li>
-          <li>Per-request CPU and wall-clock time captured and visible somewhere &mdash; logs are fine.</li>
+          <li>Per-request CPU and wall-clock time captured and visible somewhere. Logs are fine.</li>
         </ul>
         <p>Don't optimise micro-benchmarks while starving under sustained load. We will do a sustained-load run during judging.</p>
       </section>
 
       <section id="repo" class="spec-section">
-        <p class="section-num mono">07</p>
+        <p class="section-num mono">08</p>
         <h2>Repo structure and tooling</h2>
         <p>The repo at submission time should be self-contained and run from a fresh clone in under 10 minutes.</p>
         <ul class="rules">
-          <li><strong>Dockerfile</strong> &mdash; builds the binary, builds nsjail from source at image-build time, and installs every supported language toolchain. The container is the unit of "it works." nsjail must be added as a git submodule (preferred) or fetched in the Dockerfile, pinned to upstream tag <code>3.4</code>, and built inside the image. Do not bundle a prebuilt binary, do not assume the host has nsjail installed, do not install it from a Debian/Ubuntu package archive. We expect to see <code>git submodule add https://github.com/google/nsjail external/nsjail</code> (or an equivalent fetch + checkout) and a build step in the Dockerfile.</li>
-          <li><strong>Docker Compose</strong> &mdash; brings up the server for local dev with one command.</li>
-          <li><strong>Makefile</strong> &mdash; every common operation has a target. At minimum: <code>make build</code>, <code>make run</code>, <code>make test</code>, <code>make integration</code>, <code>make load</code>, <code>make lint</code>. No bare <code>go run</code> instructions in the README.</li>
-          <li><strong>docs/</strong> &mdash; anything longer than a paragraph lives here as its own file: <code>docs/api.md</code>, <code>docs/languages.md</code>, <code>docs/security.md</code>, <code>docs/benchmarks.md</code>, <code>docs/architecture.md</code>.</li>
-          <li><strong>README.md</strong> &mdash; short. What it is, how to run, where the docs are. Write it as a human wrote it. No AI-style filler &mdash; no "elegant", "robust", "seamlessly", "leverage", no emoji decoration, no "features" sections dressed up with emoji, no marketing copy. If a sentence wouldn't survive a code review, cut it.</li>
-          <li><strong>Tests</strong> &mdash; unit tests on everything that doesn't need nsjail: config loading, filename validation, flag allow-listing, status mapping, output truncation. At least one end-to-end test per in-scope language.</li>
-          <li><strong>Format and linting</strong> &mdash; <code>go vet</code> and <code>staticcheck</code> (or <code>golangci-lint</code>) clean.</li>
+          <li><strong>Dockerfile.</strong> Builds the binary, builds nsjail from source at image-build time, and installs every supported language toolchain. The container is the unit of "it works." nsjail must be added as a git submodule (preferred) or fetched in the Dockerfile, pinned to upstream tag <code>3.4</code>, and built inside the image. Do not bundle a prebuilt binary. Do not assume the host has nsjail installed. Do not install it from a package archive. Expect to see <code>git submodule add https://github.com/google/nsjail external/nsjail</code> (or equivalent) and a build step in the Dockerfile.</li>
+          <li><strong>Docker Compose.</strong> Brings up the server for local development with a single command.</li>
+          <li><strong>Makefile.</strong> Every common operation has a target. At minimum: <code>make build</code>, <code>make run</code>, <code>make test</code>, <code>make integration</code>, <code>make load</code>, <code>make lint</code>. No bare <code>go run</code> instructions in the README.</li>
+          <li><strong>The docs/ folder.</strong> Anything longer than a paragraph lives here as its own file: <code>docs/api.md</code>, <code>docs/languages.md</code>, <code>docs/security.md</code>, <code>docs/benchmarks.md</code>, <code>docs/architecture.md</code>.</li>
+          <li><strong>README.md.</strong> Short. What it is, how to run, where the docs are. Write it as a human wrote it. No AI filler. No "elegant", "robust", "seamlessly", or "leverage". No emoji decoration. No marketing copy. If a sentence wouldn't survive a code review, cut it.</li>
+          <li><strong>Tests.</strong> Unit tests on everything that doesn't need nsjail: config loading, filename validation, flag allow-listing, status mapping, output truncation. At least one end-to-end test per in-scope language.</li>
+          <li><strong>Format and linting.</strong> <code>go vet</code> and <code>staticcheck</code> (or <code>golangci-lint</code>) must be clean.</li>
         </ul>
         <p>Everything runs in Docker. If we can't <code>docker build</code> and <code>docker run</code> your repo and have <code>/healthz</code> return <code>200</code>, you're not finished.</p>
       </section>
 
       <section id="judging" class="spec-section">
-        <p class="section-num mono">08</p>
+        <p class="section-num mono">09</p>
         <h2>Judging</h2>
         <p>On judging day, we run a private corpus of <code>POST /run</code> requests against your container, plus the demo-day language addition, plus a sustained-load run.</p>
         <div class="table-wrap">
@@ -321,44 +381,44 @@
               <tr><td>Security holes closed (5 required, more = bonus)</td><td>15%</td></tr>
               <tr><td>Code quality, readability, tests</td><td>10%</td></tr>
               <tr><td>Languages beyond the in-scope seven</td><td>10%</td></tr>
-              <tr><td>Health endpoints (<code>/healthz</code>, <code>/readyz</code>, <code>/info</code>) &mdash; accuracy and completeness</td><td>5%</td></tr>
+              <tr><td>Health endpoints (<code>/healthz</code>, <code>/readyz</code>, <code>/info</code>): accuracy and completeness</td><td>5%</td></tr>
             </tbody>
           </table>
         </div>
         <h3>Bonuses</h3>
         <ul class="rules">
-          <li>More than five languages working out of the box. Rust, Go itself, Kotlin, C#, Ruby, Lua, OCaml, Swift, Zig &mdash; each with a passing smoke probe on <code>/readyz</code> is a point.</li>
-          <li>Closing more than five of the seven security holes. Each extra is worth half a must-have.</li>
-          <li>Structured request logs &mdash; one JSON line per request with request id, language, durations, status.</li>
-          <li>A clean architecture doc (<code>docs/architecture.md</code>) we'd be happy to onboard a new engineer with.</li>
+          <li><strong>Languages beyond the seven in scope.</strong> Rust, Go, Kotlin, C#, Ruby, Lua, OCaml, Swift, Zig. Each one that passes its smoke probe on <code>/readyz</code> is worth one point.</li>
+          <li><strong>Closing more than five of the seven security holes.</strong> Each extra closure counts for half the score of a required one.</li>
+          <li><strong>Structured request logs.</strong> One JSON line per request, with request id, language, durations, and status.</li>
+          <li><strong>A clean architecture doc at <code>docs/architecture.md</code>.</strong> Good enough that we could hand it to a new engineer on their first day.</li>
         </ul>
       </section>
 
       <section id="submission" class="spec-section">
-        <p class="section-num mono">09</p>
+        <p class="section-num mono">10</p>
         <h2>Submission</h2>
-        <p>Submission repo: <a href="https://github.com/thesouldev/goboxd"><code>github.com/thesouldev/goboxd</code></a>. Base branch: <code>master</code>. The workflow is plain open-source &mdash; fork, branch, PR. We don't add you as a collaborator.</p>
+        <p>Submission repo: <a href="https://github.com/thesouldev/goboxd"><code>github.com/thesouldev/goboxd</code></a>. Base branch: <code>master</code>. The workflow is plain open-source: fork, branch, PR. We do not add you as a collaborator.</p>
         <ol class="rules">
-          <li>Register through the Paradox listing.</li>
-          <li>Fork <a href="https://github.com/thesouldev/goboxd"><code>thesouldev/goboxd</code></a> to your own GitHub account (or a team account).</li>
-          <li>In your fork, branch off <code>master</code> as <code>team/&lt;your-team-name&gt;</code>.</li>
-          <li>Commit your work on that branch and push to your fork. Keep the history clean &mdash; avoid one commit for the whole feature, we want to see how you worked. Push as often as you like.</li>
-          <li>Open a PR from <code>&lt;your-fork&gt;:team/&lt;your-team-name&gt;</code> back to <code>thesouldev/goboxd:master</code> before the deadline. Mark it ready-for-review.</li>
-          <li>PR description: team members, framework choice (one sentence why), how to run locally (one paragraph pointing at the Makefile), the security holes you closed with <code>file:line</code> links, languages supported, and a link to <code>docs/benchmarks.md</code>.</li>
+          <li><strong>Register through the Paradox listing.</strong> That is how we know you exist.</li>
+          <li><strong>Fork the submission repo.</strong> Fork <a href="https://github.com/thesouldev/goboxd"><code>thesouldev/goboxd</code></a> to your own GitHub account, or to a team account if you are working as a pair.</li>
+          <li><strong>Create a team branch.</strong> In your fork, branch off <code>master</code> as <code>team/&lt;your-team-name&gt;</code>.</li>
+          <li><strong>Work on that branch.</strong> Commit and push to your fork as often as you like. Keep the history clean. Avoid one giant commit for the whole feature; we want to see how you worked.</li>
+          <li><strong>Open a PR before the deadline.</strong> Open it from <code>&lt;your-fork&gt;:team/&lt;your-team-name&gt;</code> back to <code>thesouldev/goboxd:master</code>. Mark it ready-for-review.</li>
+          <li><strong>PR description.</strong> Include: team members, framework choice in one sentence with the reason, how to run locally in one paragraph pointing at the Makefile, the security holes you closed with <code>file:line</code> links, languages supported, and a link to <code>docs/benchmarks.md</code>.</li>
         </ol>
         <p>Late PRs and post-deadline force-pushes are not considered.</p>
       </section>
 
       <section id="resources" class="spec-section">
-        <p class="section-num mono">10</p>
+        <p class="section-num mono">11</p>
         <h2>Resources</h2>
         <ul class="resources-list">
-          <li><strong>Submission repo</strong> &mdash; <a href="https://github.com/thesouldev/goboxd">github.com/thesouldev/goboxd</a></li>
-          <li><strong>Reference Python + Flask implementation</strong> (read-only) &mdash; <a href="https://drive.google.com/file/d/1KvB0Wl_jrz4sOELQWRzr-tCI8IgEptLE/view?usp=drive_link">drive link</a></li>
-          <li><strong>Sample request/reply pairs</strong> &mdash; inside the reference repo, under <code>tests/</code></li>
-          <li><strong>Language install scripts used by the reference</strong> &mdash; inside the reference repo, under <code>scripts/lang_install/</code></li>
-          <li><strong>Google nsjail (upstream sandbox we wrap)</strong> &mdash; <a href="https://github.com/google/nsjail">github.com/google/nsjail</a> · pin tag <code>3.4</code></li>
-          <li><strong>Questions</strong> &mdash; <a href="https://github.com/intern-iitm/goboxd-hackathon/discussions">GitHub Discussions</a></li>
+          <li><strong>Submission repo.</strong> <a href="https://github.com/thesouldev/goboxd">github.com/thesouldev/goboxd</a></li>
+          <li><strong>Reference Python + Flask implementation</strong> (read-only). <a href="https://drive.google.com/file/d/1KvB0Wl_jrz4sOELQWRzr-tCI8IgEptLE/view?usp=drive_link">Drive link</a></li>
+          <li><strong>Sample request and reply pairs.</strong> Inside the reference repo, under <code>tests/</code></li>
+          <li><strong>Language install scripts used by the reference.</strong> Inside the reference repo, under <code>scripts/lang_install/</code></li>
+          <li><strong>Google nsjail</strong> (the upstream sandbox we wrap). <a href="https://github.com/google/nsjail">github.com/google/nsjail</a>. Pin tag <code>3.4</code>.</li>
+          <li><strong>Questions.</strong> <a href="https://github.com/intern-iitm/goboxd-hackathon/discussions">GitHub Discussions</a></li>
         </ul>
       </section>
     </article>
