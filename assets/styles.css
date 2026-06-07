@@ -301,6 +301,95 @@ h3.subheading {
 }
 .stage-advance strong { color: var(--fg); font-weight: 600; }
 
+/* finalist announcement banner */
+.finalist-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 11px 24px;
+  font-size: 14px;
+  text-align: center;
+  transition: background 0.15s ease;
+}
+.finalist-banner:hover {
+  background: var(--accent-hover);
+  color: #fff;
+  border: none;
+}
+.finalist-banner-badge {
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.18);
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+}
+.finalist-banner-text { font-weight: 500; }
+.finalist-banner-cta {
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* finalists */
+.section-finalists { background: var(--bg); scroll-margin-top: 84px; }
+.finalists-intro {
+  max-width: var(--container-narrow);
+  color: var(--fg-dim);
+  font-size: 17px;
+  line-height: 1.62;
+  margin: 18px 0 0;
+}
+.finalists-grid {
+  list-style: none;
+  padding: 0;
+  margin: 52px 0 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.finalist {
+  background: var(--bg-elevated);
+  padding: 24px 28px;
+  display: flex;
+  align-items: baseline;
+  gap: 18px;
+  transition: background 0.15s ease;
+}
+.finalist:hover { background: var(--bg-spec); }
+.finalist-num {
+  font-size: 12px;
+  color: var(--accent);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  min-width: 22px;
+}
+.finalist-body { display: flex; flex-direction: column; gap: 3px; }
+.finalist-name {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.018em;
+  color: var(--fg);
+}
+.finalist-handle {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--fg-dim);
+  border-bottom: none;
+}
+a.finalist-handle:hover { color: var(--accent); }
+
 /* rewards */
 .rewards-grid {
   display: grid;
@@ -831,6 +920,7 @@ table.judging td:last-child {
   .rewards-grid { grid-template-columns: 1fr; gap: 18px; }
   .stage-minimums { grid-template-columns: 1fr; gap: 16px; }
   .judging-axes { grid-template-columns: 1fr; gap: 28px; }
+  .finalists-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 760px) {
