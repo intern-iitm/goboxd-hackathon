@@ -540,6 +540,24 @@ a.podium-handle:hover { color: #FFD86B; }
   background: linear-gradient(180deg, rgba(205, 127, 50, 0.20), rgba(205, 127, 50, 0.04));
   border-color: rgba(205, 127, 50, 0.32);
 }
+.winners-thanks {
+  max-width: var(--container-narrow);
+  margin: 56px auto 0;
+  text-align: center;
+  color: var(--fg-on-dark-dim);
+  font-family: var(--serif);
+  font-size: 19px;
+  line-height: 1.6;
+  letter-spacing: -0.005em;
+}
+.winners-thanks a {
+  color: var(--fg-on-dark);
+  border-bottom-color: #FFD86B;
+}
+.winners-thanks a:hover {
+  color: #FFD86B;
+  border-bottom-color: #FFD86B;
+}
 
 @media (prefers-reduced-motion: reduce) {
   .winners-banner, .section-winners h2.display, .podium-crown,
